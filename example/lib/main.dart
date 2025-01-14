@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       home: Scaffold(
         body: Center(
           child: NetworkImagePlus(
-            url: 'https://example.com/image.png',
+            url: 'https://randomuser.me/api/portraits/men/29.jpg',
             width: 100,
             height: 100,
             fit: BoxFit.cover,

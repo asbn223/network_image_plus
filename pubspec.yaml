@@ -1,0 +1,24 @@
+name: network_image_plus
+description: "Network Image Plus is a Flutter package that allows you to rendered images on the web using CanvasKit without CORS issues."
+version: 1.0.6
+homepage: https://github.com/drkdelaney/network_image_plus
+
+environment:
+  sdk: '>=3.4.3 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  web: ^1.1.0
+  cached_network_image: ^3.4.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true

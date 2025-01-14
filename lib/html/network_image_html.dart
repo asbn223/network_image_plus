@@ -1,5 +1,18 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:web/web.dart';
+
+final String _key = 'image_web';
+final CacheManager _cacheManager = CacheManager(
+  Config(
+    _key,
+    stalePeriod: const Duration(days: 7),
+    maxNrOfCacheObjects: 20,
+    repo: JsonCacheInfoRepository(databaseName: _key),
+    fileSystem: IOFileSystem(_key),
+    fileService: HttpFileService(),
+  ),
+);
 
 class NetworkImagePlus extends StatelessWidget {
   const NetworkImagePlus({
@@ -31,23 +44,37 @@ class NetworkImagePlus extends StatelessWidget {
     return SizedBox(
       width: width,
       height: height,
-      child: HtmlElementView.fromTagName(
-        tagName: 'img',
-        onElementCreated: (Object element) {
-          try {
-            final img = element as HTMLImageElement;
-            img.src = url;
-            img.style.width = width != null ? '${width}px' : 'auto';
-            img.style.height = height != null ? '${height}px' : 'auto';
-            img.style.marginLeft = 'auto';
-            img.style.marginRight = 'auto';
-            img.style.display = 'block';
-            img.style.objectFit = fit?.toCssName ?? 'fill';
-            if (isCircle) {
-              img.style.borderRadius = '50%';
-            }
-          } catch (e) {
-            debugPrint('NetworkImagePlus: $e');
+      child: FutureBuilder(
+        future: _cacheManager.getSingleFile(url),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done &&
+              snapshot.hasData) {
+            return HtmlElementView.fromTagName(
+              tagName: 'img',
+              onElementCreated: (Object element) {
+                try {
+                  final img = element as HTMLImageElement;
+                  img.src = url;
+                  img.style.width = width != null ? '${width}px' : 'auto';
+                  img.style.height = height != null ? '${height}px' : 'auto';
+                  img.style.marginLeft = 'auto';
+                  img.style.marginRight = 'auto';
+                  img.style.display = 'block';
+                  img.style.objectFit = fit?.toCssName ?? 'fill';
+                  if (isCircle) {
+                    img.style.borderRadius = '50%';
+                  }
+                } catch (e) {
+                  debugPrint('NetworkImagePlus: $e');
+                }
+              },
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Icon(Icons.error),
+            );
+          } else {
+            return Center(child: CircularProgressIndicator());
           }
         },
       ),
